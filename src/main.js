@@ -49,7 +49,7 @@ directional.add(directionalLight.position, 'z').min(-10).max(10).step(0.1); // M
 
 // Hemisphere light
 const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9); // Creates hemisphere light with red sky color and blue ground color
-hemisphereLight.visible = true; // Light is enabled by default
+hemisphereLight.visible = false; // Light is enabled by default
 scene.add(hemisphereLight);
 
 // GUI Controls
@@ -59,7 +59,24 @@ hemisphere.addColor(hemisphereLight, 'color').name('Sky Color'); // Change sky c
 hemisphere.addColor(hemisphereLight, 'groundColor').name('Ground Color'); // Change ground color
 hemisphere.add(hemisphereLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
 
+// Point light
+const pointLight = new THREE.PointLight(0xff9000, 1.5, 0, 2); // Creates a point light with orange color, intensity 1.5, no distance limit, and decay rate of 2
+pointLight.position.set(1, -0.5, 1); // Sets the light position in the scene
+pointLight.visible = true; // Light is enabled by default
+scene.add(pointLight);
 
+// GUI Controls
+const point = gui.addFolder('Point Light');
+point.add(pointLight, 'visible').name('Enable Light'); // Toggle light on/off
+point.addColor(pointLight, 'color'); // Change light color
+point.add(pointLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
+point.add(pointLight, 'distance').min(0).max(50).step(0.1).name('Distance'); // Adjust light distance (0 = infinite range)
+point.add(pointLight, 'decay').min(0).max(5).step(0.1).name('Decay'); // Adjust how quickly the light fades
+
+// Position Controls
+point.add(pointLight.position, 'x').min(-10).max(10).step(0.1).name('Position X'); // Move light along X-axis
+point.add(pointLight.position, 'y').min(-10).max(10).step(0.1).name('Position Y'); // Move light along Y-axis
+point.add(pointLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'); // Move light along Z-axis
 
 // const pointLight = new THREE.PointLight(0xffffff, 50)
 // pointLight.position.x = 2
