@@ -22,29 +22,44 @@ const scene = new THREE.Scene()
  */
 
 // Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
-scene.add(ambientLight)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Creates ambient light with white color and intensity 1.5
+ambientLight.visible = false; // Light is disabled by default
+scene.add(ambientLight);
 
-//GUI
-const ambient = gui.addFolder('Ambient Light')
-ambient.add(ambientLight, 'visible').name('Enable Light');
-ambient.addColor(ambientLight, 'color');
-ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001)
-
+// GUI Controls
+const ambient = gui.addFolder('Ambient Light');
+ambient.add(ambientLight, 'visible').name('Enable Light'); // Toggle light on/off
+ambient.addColor(ambientLight, 'color'); // Change light color
+ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9)
-directionalLight.position.set(1, 0.25, 0)
-scene.add(directionalLight)
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9); // Creates directional light with blue-green tint and intensity 0.9
+directionalLight.position.set(1, 0.25, 0); // Sets the light position in the scene
+directionalLight.visible = false; // Light is disabled by default
+scene.add(directionalLight);
 
-GUI
-const directional = gui.addFolder('Directional light')
-directional.add(directionalLight, 'visible').name('Enable Light');
-directional.addColor(directionalLight, 'color');
-directional.add(directionalLight, 'intensity').min(0).max(3).step(0.001)
-directional.add(directionalLight.position, 'x').min(-10).max(10).step(0.1);
-directional.add(directionalLight.position, 'y').min(-10).max(10).step(0.1);
-directional.add(directionalLight.position, 'z').min(-10).max(10).step(0.1);
+// GUI Controls
+const directional = gui.addFolder('Directional Light');
+directional.add(directionalLight, 'visible').name('Enable Light'); // Toggle light on/off
+directional.addColor(directionalLight, 'color'); // Change light color
+directional.add(directionalLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
+directional.add(directionalLight.position, 'x').min(-10).max(10).step(0.1); // Move light along X-axis
+directional.add(directionalLight.position, 'y').min(-10).max(10).step(0.1); // Move light along Y-axis
+directional.add(directionalLight.position, 'z').min(-10).max(10).step(0.1); // Move light along Z-axis
+
+// Hemisphere light
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9); // Creates hemisphere light with red sky color and blue ground color
+hemisphereLight.visible = true; // Light is enabled by default
+scene.add(hemisphereLight);
+
+// GUI Controls
+const hemisphere = gui.addFolder('Hemisphere Light');
+hemisphere.add(hemisphereLight, 'visible').name('Enable Light'); // Toggle light on/off
+hemisphere.addColor(hemisphereLight, 'color').name('Sky Color'); // Change sky color
+hemisphere.addColor(hemisphereLight, 'groundColor').name('Ground Color'); // Change ground color
+hemisphere.add(hemisphereLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
+
+
 
 // const pointLight = new THREE.PointLight(0xffffff, 50)
 // pointLight.position.x = 2
