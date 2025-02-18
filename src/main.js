@@ -62,7 +62,7 @@ hemisphere.add(hemisphereLight, 'intensity').min(0).max(3).step(0.001); // Adjus
 // Point light
 const pointLight = new THREE.PointLight(0xff9000, 1.5, 0, 2); // Creates a point light with orange color, intensity 1.5, no distance limit, and decay rate of 2
 pointLight.position.set(1, -0.5, 1); // Sets the light position in the scene
-pointLight.visible = true; // Light is enabled by default
+pointLight.visible = false; // Light is enabled by default
 scene.add(pointLight);
 
 // GUI Controls
@@ -77,6 +77,31 @@ point.add(pointLight, 'decay').min(0).max(5).step(0.1).name('Decay'); // Adjust 
 point.add(pointLight.position, 'x').min(-10).max(10).step(0.1).name('Position X'); // Move light along X-axis
 point.add(pointLight.position, 'y').min(-10).max(10).step(0.1).name('Position Y'); // Move light along Y-axis
 point.add(pointLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'); // Move light along Z-axis
+
+
+// Rect Area Light
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1); // Creates a rectangular area light with purple color, intensity 6, width 1, and height 1
+rectAreaLight.position.set(-1.5, 0, 1.5); // Sets the light position in the scene
+rectAreaLight.lookAt(new THREE.Vector3()); // Ensures the light is facing the center
+rectAreaLight.visible = true; // Light is enabled by default
+scene.add(rectAreaLight);
+
+// GUI Controls
+const rectArea = gui.addFolder('Rect Area Light');
+rectArea.add(rectAreaLight, 'visible').name('Enable Light'); // Toggle light on/off
+rectArea.addColor(rectAreaLight, 'color'); // Change light color
+rectArea.add(rectAreaLight, 'intensity').min(0).max(10).step(0.1); // Adjust light intensity
+rectArea.add(rectAreaLight, 'width').min(0.1).max(5).step(0.1).name('Width'); // Adjust light width
+rectArea.add(rectAreaLight, 'height').min(0.1).max(5).step(0.1).name('Height'); // Adjust light height
+
+// Position Controls
+rectArea.add(rectAreaLight.position, 'x').min(-10).max(10).step(0.1).name('Position X'); // Move light along X-axis
+rectArea.add(rectAreaLight.position, 'y').min(-10).max(10).step(0.1).name('Position Y'); // Move light along Y-axis
+rectArea.add(rectAreaLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'); // Move light along Z-axis
+
+
+
+
 
 // const pointLight = new THREE.PointLight(0xffffff, 50)
 // pointLight.position.x = 2
