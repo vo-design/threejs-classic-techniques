@@ -6,7 +6,10 @@ import GUI from 'lil-gui'
  * Base
  */
 // Debug
-const gui = new GUI()
+const gui = new GUI({
+    width: 300,
+    title: 'Light'
+})
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -17,10 +20,28 @@ const scene = new THREE.Scene()
 /**
  * Lights
  */
+
+// Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
 scene.add(ambientLight)
 
-gui.add(ambientLight, 'intensity').min(0).max(3).step(0.001)
+//GUI
+const ambient = gui.addFolder('Ambient Light')
+ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001)
+ambient.addColor(ambientLight, 'color');
+
+// Directional light
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9)
+directionalLight.position.set(1, 0.25, 0)
+scene.add(directionalLight)
+
+GUI
+const directional = gui.addFolder('Directional light')
+directional.addColor(directionalLight, 'color');
+directional.add(directionalLight, 'intensity').min(0).max(3).step(0.001)
+directional.add(directionalLight.position, 'x').min(-10).max(10).step(0.1);
+directional.add(directionalLight.position, 'y').min(-10).max(10).step(0.1);
+directional.add(directionalLight.position, 'z').min(-10).max(10).step(0.1);
 
 // const pointLight = new THREE.PointLight(0xffffff, 50)
 // pointLight.position.x = 2
