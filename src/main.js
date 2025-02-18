@@ -28,6 +28,7 @@ scene.add(ambientLight);
 
 // GUI Controls
 const ambient = gui.addFolder('Ambient Light');
+ambient.close()
 ambient.add(ambientLight, 'visible').name('Enable Light'); // Toggle light on/off
 ambient.addColor(ambientLight, 'color'); // Change light color
 ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
@@ -40,6 +41,7 @@ scene.add(directionalLight);
 
 // GUI Controls
 const directional = gui.addFolder('Directional Light');
+directional.close()
 directional.add(directionalLight, 'visible').name('Enable Light'); // Toggle light on/off
 directional.addColor(directionalLight, 'color'); // Change light color
 directional.add(directionalLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
@@ -54,6 +56,7 @@ scene.add(hemisphereLight);
 
 // GUI Controls
 const hemisphere = gui.addFolder('Hemisphere Light');
+hemisphere.close()
 hemisphere.add(hemisphereLight, 'visible').name('Enable Light'); // Toggle light on/off
 hemisphere.addColor(hemisphereLight, 'color').name('Sky Color'); // Change sky color
 hemisphere.addColor(hemisphereLight, 'groundColor').name('Ground Color'); // Change ground color
@@ -67,6 +70,7 @@ scene.add(pointLight);
 
 // GUI Controls
 const point = gui.addFolder('Point Light');
+point.close()
 point.add(pointLight, 'visible').name('Enable Light'); // Toggle light on/off
 point.addColor(pointLight, 'color'); // Change light color
 point.add(pointLight, 'intensity').min(0).max(3).step(0.001); // Adjust light intensity
@@ -83,11 +87,12 @@ point.add(pointLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'
 const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1); // Creates a rectangular area light with purple color, intensity 6, width 1, and height 1
 rectAreaLight.position.set(-1.5, 0, 1.5); // Sets the light position in the scene
 rectAreaLight.lookAt(new THREE.Vector3()); // Ensures the light is facing the center
-rectAreaLight.visible = true; // Light is enabled by default
+rectAreaLight.visible = false; // Light is enabled by default
 scene.add(rectAreaLight);
 
 // GUI Controls
 const rectArea = gui.addFolder('Rect Area Light');
+rectArea.close()
 rectArea.add(rectAreaLight, 'visible').name('Enable Light'); // Toggle light on/off
 rectArea.addColor(rectAreaLight, 'color'); // Change light color
 rectArea.add(rectAreaLight, 'intensity').min(0).max(10).step(0.1); // Adjust light intensity
@@ -99,15 +104,41 @@ rectArea.add(rectAreaLight.position, 'x').min(-10).max(10).step(0.1).name('Posit
 rectArea.add(rectAreaLight.position, 'y').min(-10).max(10).step(0.1).name('Position Y'); // Move light along Y-axis
 rectArea.add(rectAreaLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'); // Move light along Z-axis
 
+// Spotlight
+const spotLight = new THREE.SpotLight(0x78ff00, 4.5, 10, Math.PI * 0.1, 0.25, 1);
+// Creates a spotlight with green color, intensity 4.5, max distance 10, angle π*0.1, penumbra 0.25, and decay 1
+spotLight.position.set(0, 2, 3); // Sets the light position in the scene
+spotLight.visible = true; // Light is enabled by default
+scene.add(spotLight);
 
+// Spotlight Target
+spotLight.target.position.set(0, 0, 0); // Sets initial target position at the center
+scene.add(spotLight.target); // Adds the target to the scene
 
+// GUI Controls
+const spot = gui.addFolder('Spot Light');
+spot.add(spotLight, 'visible').name('Enable Light'); // Toggle light on/off
+spot.addColor(spotLight, 'color'); // Change light color
+spot.add(spotLight, 'intensity').min(0).max(10).step(0.1); // Adjust light intensity
+spot.add(spotLight, 'distance').min(0).max(50).step(0.1).name('Distance'); // Adjust how far the light reaches
+spot.add(spotLight, 'angle').min(0).max(Math.PI / 2).step(0.01).name('Angle'); // Adjust the cone opening angle
+spot.add(spotLight, 'penumbra').min(0).max(1).step(0.01).name('Penumbra'); // Adjust light softness at the edges
+spot.add(spotLight, 'decay').min(0).max(5).step(0.1).name('Decay'); // Adjust light fading over distance
 
+// Position Controls
+spot.add(spotLight.position, 'x').min(-10).max(10).step(0.1).name('Position X'); // Move light along X-axis
+spot.add(spotLight.position, 'y').min(-10).max(10).step(0.1).name('Position Y'); // Move light along Y-axis
+spot.add(spotLight.position, 'z').min(-10).max(10).step(0.1).name('Position Z'); // Move light along Z-axis
 
-// const pointLight = new THREE.PointLight(0xffffff, 50)
-// pointLight.position.x = 2
-// pointLight.position.y = 3
-// pointLight.position.z = 4
-// scene.add(pointLight)
+// Target Position Controls
+const spotTarget = spot.addFolder('Spotlight Target');
+spotTarget.add(spotLight.target.position, 'x').min(-10).max(10).step(0.1).name('Target X'); // Move target along X-axis
+spotTarget.add(spotLight.target.position, 'y').min(-10).max(10).step(0.1).name('Target Y'); // Move target along Y-axis
+spotTarget.add(spotLight.target.position, 'z').min(-10).max(10).step(0.1).name('Target Z'); // Move target along Z-axis
+
+// Ensure the light updates when the target moves
+spotTarget.onChange(() => spotLight.target.updateMatrixWorld());
+
 
 /**
  * Objects
