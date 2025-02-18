@@ -8,7 +8,7 @@ import GUI from 'lil-gui'
 // Debug
 const gui = new GUI({
     width: 300,
-    title: 'Light'
+    title: 'Lights'
 })
 
 // Canvas
