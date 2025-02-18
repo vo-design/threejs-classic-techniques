@@ -27,8 +27,10 @@ scene.add(ambientLight)
 
 //GUI
 const ambient = gui.addFolder('Ambient Light')
-ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001)
+ambient.add(ambientLight, 'visible').name('Enable Light');
 ambient.addColor(ambientLight, 'color');
+ambient.add(ambientLight, 'intensity').min(0).max(3).step(0.001)
+
 
 // Directional light
 const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9)
@@ -37,6 +39,7 @@ scene.add(directionalLight)
 
 GUI
 const directional = gui.addFolder('Directional light')
+directional.add(directionalLight, 'visible').name('Enable Light');
 directional.addColor(directionalLight, 'color');
 directional.add(directionalLight, 'intensity').min(0).max(3).step(0.001)
 directional.add(directionalLight.position, 'x').min(-10).max(10).step(0.1);
