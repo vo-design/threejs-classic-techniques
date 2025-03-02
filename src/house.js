@@ -320,6 +320,52 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
+ * Shadows
+ */
+// Renderer
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+// Cast and receive
+directionalLight.castShadow = true
+ghost1.castShadow = true
+ghost2.castShadow = true
+ghost3.castShadow = true
+
+walls.castShadow = true
+walls.receiveShadow = true
+roof.castShadow = true
+floor.receiveShadow = true
+
+for(const grave of graves.children)
+{
+    grave.castShadow = true
+    grave.receiveShadow = true
+}
+
+// Mappings
+directionalLight.shadow.mapSize.width = 256
+directionalLight.shadow.mapSize.height = 256
+directionalLight.shadow.camera.top = 8
+directionalLight.shadow.camera.right = 8
+directionalLight.shadow.camera.bottom = - 8
+directionalLight.shadow.camera.left = - 8
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 20
+
+ghost1.shadow.mapSize.width = 256
+ghost1.shadow.mapSize.height = 256
+ghost1.shadow.camera.far = 10
+
+ghost2.shadow.mapSize.width = 256
+ghost2.shadow.mapSize.height = 256
+ghost2.shadow.camera.far = 10
+
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 10
+
+/**
  * Animate
  */
 const timer = new Timer()
@@ -463,6 +509,49 @@ ghost3Folder.add(ghost3.position, 'z', -10, 10, 0.1).name('Pos Z');
 ghost3Folder.addColor({ color: ghost3.color.getHex() }, 'color')
     .onChange(value => ghost3.color.set(value))
     .name('Color');
+
+/**
+ * Debug GUI Setup for Shadows
+ */
+const shadowFolder = gui.addFolder('Shadows');
+
+// Renderer Shadows
+shadowFolder.add(renderer.shadowMap, 'enabled').name('Enable Shadows');
+
+// Directional Light Shadow Settings
+const directionalShadowFolder = shadowFolder.addFolder('Directional Light Shadow');
+directionalShadowFolder.add(directionalLight.shadow.mapSize, 'width', 128, 2048, 128).name('Map Size Width');
+directionalShadowFolder.add(directionalLight.shadow.mapSize, 'height', 128, 2048, 128).name('Map Size Height');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'top', 1, 20, 0.1).name('Camera Top');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'bottom', -20, -1, 0.1).name('Camera Bottom');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'left', -20, -1, 0.1).name('Camera Left');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'right', 1, 20, 0.1).name('Camera Right');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'near', 0.1, 10, 0.1).name('Camera Near');
+directionalShadowFolder.add(directionalLight.shadow.camera, 'far', 5, 50, 0.1).name('Camera Far');
+
+// Ghosts Shadow Settings
+const ghostShadowFolder = shadowFolder.addFolder('Ghosts Shadow');
+
+[ghost1, ghost2, ghost3].forEach((ghost, index) => {
+    const ghostFolder = ghostShadowFolder.addFolder(`Ghost ${index + 1}`);
+    ghostFolder.add(ghost.shadow.mapSize, 'width', 128, 1024, 128).name('Map Size Width');
+    ghostFolder.add(ghost.shadow.mapSize, 'height', 128, 1024, 128).name('Map Size Height');
+    ghostFolder.add(ghost.shadow.camera, 'far', 1, 20, 0.1).name('Camera Far');
+});
+
+// Object Shadows Toggle
+const objectShadowsFolder = shadowFolder.addFolder('Objects Shadows');
+objectShadowsFolder.add(walls, 'castShadow').name('Walls Cast Shadow');
+objectShadowsFolder.add(walls, 'receiveShadow').name('Walls Receive Shadow');
+objectShadowsFolder.add(roof, 'castShadow').name('Roof Cast Shadow');
+objectShadowsFolder.add(floor, 'receiveShadow').name('Floor Receive Shadow');
+
+// Graves Shadow Settings
+const gravesShadowFolder = shadowFolder.addFolder('Graves Shadows');
+for (const [index, grave] of graves.children.entries()) {
+    gravesShadowFolder.add(grave, 'castShadow').name(`Grave ${index + 1} Cast`);
+    gravesShadowFolder.add(grave, 'receiveShadow').name(`Grave ${index + 1} Receive`);
+}
 
 
 gui.close(); // Closes GUI by default, can be opened manually
