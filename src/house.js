@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 import {Timer} from 'three/addons/misc/Timer.js'
+import { Sky } from 'three/addons/objects/Sky.js'
 import GUI from 'lil-gui'
 
 /**
@@ -366,6 +367,19 @@ ghost3.shadow.mapSize.height = 256
 ghost3.shadow.camera.far = 10
 
 /**
+ * Sky
+ */
+const sky = new Sky()
+sky.scale.set(100, 100, 100)
+scene.add(sky)
+
+sky.material.uniforms['turbidity'].value = 10
+sky.material.uniforms['rayleigh'].value = 3
+sky.material.uniforms['mieCoefficient'].value = 0.1
+sky.material.uniforms['mieDirectionalG'].value = 0.95
+sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+
+/**
  * Animate
  */
 const timer = new Timer()
@@ -408,11 +422,17 @@ tick()
 
 // Create folders for better organization
 const floorFolder = gui.addFolder('Floor');
+floorFolder.close()
 const wallFolder = gui.addFolder('Wall');
+wallFolder.close()
 const roofFolder = gui.addFolder('Roof');
+roofFolder.close()
 const bushFolder = gui.addFolder('Bush');
+bushFolder.close()
 const gravesFolder = gui.addFolder('Graves');
+gravesFolder.close()
 const doorFolder = gui.addFolder('Door');
+doorFolder.close()
 
 // Debug Controls for Floor
 floorFolder.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('Displacement Scale');
@@ -446,9 +466,14 @@ gravesFolder.add(graves.scale, 'z', 0.5, 1.5, 0.01).name('Scale Z');
  * Debug GUI Setup for Lights
  */
 const lightFolder = gui.addFolder('Lights');
+lightFolder.close()
 const ambientLightFolder = lightFolder.addFolder('Ambient Light');
+ambientLightFolder.close()
 const directionalLightFolder = lightFolder.addFolder('Directional Light');
+directionalLightFolder.close()
 const doorLightFolder = lightFolder.addFolder('Door Light');
+doorLightFolder.close()
+
 
 // Debug Controls for Ambient Light
 ambientLightFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
@@ -478,6 +503,7 @@ doorLightFolder.addColor({color: doorLight.color.getHex()}, 'color')
  * Debug GUI Setup for Ghost Lights
  */
 const ghostFolder = gui.addFolder('Ghost Lights');
+ghostFolder.close()
 
 const ghost1Folder = ghostFolder.addFolder('Ghost 1');
 const ghost2Folder = ghostFolder.addFolder('Ghost 2');
@@ -514,6 +540,7 @@ ghost3Folder.addColor({ color: ghost3.color.getHex() }, 'color')
  * Debug GUI Setup for Shadows
  */
 const shadowFolder = gui.addFolder('Shadows');
+shadowFolder.close()
 
 // Renderer Shadows
 shadowFolder.add(renderer.shadowMap, 'enabled').name('Enable Shadows');
@@ -552,6 +579,26 @@ for (const [index, grave] of graves.children.entries()) {
     gravesShadowFolder.add(grave, 'castShadow').name(`Grave ${index + 1} Cast`);
     gravesShadowFolder.add(grave, 'receiveShadow').name(`Grave ${index + 1} Receive`);
 }
+
+/**
+ * Debug GUI Setup for Sky
+ */
+const skyFolder = gui.addFolder('Sky');
+skyFolder.close()
+
+// Debug Controls for Sky Properties
+skyFolder.add(sky.material.uniforms['turbidity'], 'value', 0, 20, 0.1).name('Turbidity');
+skyFolder.add(sky.material.uniforms['rayleigh'], 'value', 0, 10, 0.1).name('Rayleigh');
+skyFolder.add(sky.material.uniforms['mieCoefficient'], 'value', 0, 0.5, 0.01).name('Mie Coefficient');
+skyFolder.add(sky.material.uniforms['mieDirectionalG'], 'value', 0, 1, 0.01).name('Mie Directional G');
+
+// Debug Controls for Sun Position
+const sunFolder = skyFolder.addFolder('Sun Position');
+sunFolder.add(sky.material.uniforms['sunPosition'].value, 'x', -1, 1, 0.01).name('Pos X');
+sunFolder.add(sky.material.uniforms['sunPosition'].value, 'y', -1, 1, 0.01).name('Pos Y');
+sunFolder.add(sky.material.uniforms['sunPosition'].value, 'z', -1, 1, 0.01).name('Pos Z');
+
+
 
 
 gui.close(); // Closes GUI by default, can be opened manually
