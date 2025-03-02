@@ -253,13 +253,18 @@ for (let i = 0; i < 30; i++) {
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.275)
 scene.add(ambientLight)
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#ffffff', 1.5)
+const directionalLight = new THREE.DirectionalLight('#86cdff', 1)
 directionalLight.position.set(3, 2, -8)
 scene.add(directionalLight)
+
+// Door light
+const doorLight = new THREE.PointLight('#ff7d46', 5)
+doorLight.position.set(0, 2.2, 2.5)
+house.add(doorLight)
 
 /**
  * Sizes
@@ -367,5 +372,38 @@ bushFolder.add(bush1.scale, 'z', 0.1, 1, 0.01).name('Bush 1 Scale Z');
 gravesFolder.add(graves.position, 'y', 0, 2, 0.01).name('Height');
 gravesFolder.add(graves.scale, 'x', 0.5, 1.5, 0.01).name('Scale X');
 gravesFolder.add(graves.scale, 'z', 0.5, 1.5, 0.01).name('Scale Z');
+
+/**
+ * Debug GUI Setup for Lights
+ */
+const lightFolder = gui.addFolder('Lights');
+const ambientLightFolder = lightFolder.addFolder('Ambient Light');
+const directionalLightFolder = lightFolder.addFolder('Directional Light');
+const doorLightFolder = lightFolder.addFolder('Door Light');
+
+// Debug Controls for Ambient Light
+ambientLightFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
+ambientLightFolder.addColor({ color: ambientLight.color.getHex() }, 'color')
+    .onChange(value => ambientLight.color.set(value))
+    .name('Color');
+
+// Debug Controls for Directional Light
+directionalLightFolder.add(directionalLight, 'intensity', 0, 3, 0.01).name('Intensity');
+directionalLightFolder.add(directionalLight.position, 'x', -10, 10, 0.1).name('Pos X');
+directionalLightFolder.add(directionalLight.position, 'y', -10, 10, 0.1).name('Pos Y');
+directionalLightFolder.add(directionalLight.position, 'z', -10, 10, 0.1).name('Pos Z');
+directionalLightFolder.addColor({ color: directionalLight.color.getHex() }, 'color')
+    .onChange(value => directionalLight.color.set(value))
+    .name('Color');
+
+// Debug Controls for Door Light
+doorLightFolder.add(doorLight, 'intensity', 0, 10, 0.1).name('Intensity');
+doorLightFolder.add(doorLight.position, 'x', -5, 5, 0.1).name('Pos X');
+doorLightFolder.add(doorLight.position, 'y', 0, 5, 0.1).name('Pos Y');
+doorLightFolder.add(doorLight.position, 'z', -5, 5, 0.1).name('Pos Z');
+doorLightFolder.addColor({ color: doorLight.color.getHex() }, 'color')
+    .onChange(value => doorLight.color.set(value))
+    .name('Color');
+
 
 gui.close(); // Closes GUI by default, can be opened manually
