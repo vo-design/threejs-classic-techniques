@@ -129,8 +129,6 @@ const floor = new THREE.Mesh(
 floor.rotation.x = -Math.PI * 0.5
 scene.add(floor)
 
-gui.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('floorDisplacementScale')
-gui.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name('floorDisplacementBias')
 
 // House container
 const house = new THREE.Group()
@@ -329,3 +327,45 @@ const tick = () => {
 }
 
 tick()
+
+/**
+ * Debug GUI Setup
+ */
+
+// Create folders for better organization
+const floorFolder = gui.addFolder('Floor');
+const wallFolder = gui.addFolder('Wall');
+const roofFolder = gui.addFolder('Roof');
+const bushFolder = gui.addFolder('Bush');
+const gravesFolder = gui.addFolder('Graves');
+const doorFolder = gui.addFolder('Door');
+
+// Debug Controls for Floor
+floorFolder.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('Displacement Scale');
+floorFolder.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name('Displacement Bias');
+
+// Debug Controls for Walls
+wallFolder.add(walls.scale, 'x', 1, 3, 0.01).name('Width');
+wallFolder.add(walls.scale, 'y', 1, 3, 0.01).name('Height');
+wallFolder.add(walls.scale, 'z', 1, 3, 0.01).name('Depth');
+
+// Debug Controls for Roof
+roofFolder.add(roof.scale, 'x', 1, 3, 0.01).name('Scale X');
+roofFolder.add(roof.scale, 'y', 1, 3, 0.01).name('Scale Y');
+roofFolder.add(roof.scale, 'z', 1, 3, 0.01).name('Scale Z');
+
+// Debug Controls for Door
+doorFolder.add(door.scale, 'x', 0.5, 2, 0.01).name('Scale X');
+doorFolder.add(door.scale, 'y', 0.5, 2, 0.01).name('Scale Y');
+
+// Debug Controls for Bushes
+bushFolder.add(bush1.scale, 'x', 0.1, 1, 0.01).name('Bush 1 Scale X');
+bushFolder.add(bush1.scale, 'y', 0.1, 1, 0.01).name('Bush 1 Scale Y');
+bushFolder.add(bush1.scale, 'z', 0.1, 1, 0.01).name('Bush 1 Scale Z');
+
+// Debug Controls for Graves
+gravesFolder.add(graves.position, 'y', 0, 2, 0.01).name('Height');
+gravesFolder.add(graves.scale, 'x', 0.5, 1.5, 0.01).name('Scale X');
+gravesFolder.add(graves.scale, 'z', 0.5, 1.5, 0.01).name('Scale Z');
+
+gui.close(); // Closes GUI by default, can be opened manually
