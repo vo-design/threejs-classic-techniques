@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 import {Timer} from 'three/addons/misc/Timer.js'
-import { Sky } from 'three/addons/objects/Sky.js'
 import GUI from 'lil-gui'
 
 /**
@@ -254,25 +253,25 @@ for (let i = 0; i < 30; i++) {
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#86cdff', 0.275)
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.1)
 scene.add(ambientLight)
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#86cdff', 1)
-directionalLight.position.set(3, 2, -8)
+const directionalLight = new THREE.DirectionalLight('#84a9ff', 0.37)
+directionalLight.position.set(-1, 2, -8)
 scene.add(directionalLight)
 
 // Door light
-const doorLight = new THREE.PointLight('#9aaaea', 5)
-doorLight.position.set(0, 2.2, 2.5)
+const doorLight = new THREE.PointLight('#9396bd', 0.8)
+doorLight.position.set(-0.19, 2.2, 2.5)
 house.add(doorLight)
 
 /**
  * Ghosts
  */
-const ghost1 = new THREE.PointLight('#8800ff', 6)
-const ghost2 = new THREE.PointLight('#ff0088', 6)
-const ghost3 = new THREE.PointLight('#ff0000', 6)
+const ghost1 = new THREE.PointLight('#ffffff', 0.6)
+const ghost2 = new THREE.PointLight('#ffffff', 0.6)
+const ghost3 = new THREE.PointLight('#ffffff', 0.6)
 scene.add(ghost1, ghost2, ghost3)
 
 /**
@@ -302,9 +301,9 @@ window.addEventListener('resize', () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 4
-camera.position.y = 2
-camera.position.z = 5
+camera.position.x = 5
+camera.position.y = 1
+camera.position.z = 12
 scene.add(camera)
 
 // Controls
@@ -338,8 +337,7 @@ walls.receiveShadow = true
 roof.castShadow = true
 floor.receiveShadow = true
 
-for(const grave of graves.children)
-{
+for (const grave of graves.children) {
     grave.castShadow = true
     grave.receiveShadow = true
 }
@@ -349,8 +347,8 @@ directionalLight.shadow.mapSize.width = 256
 directionalLight.shadow.mapSize.height = 256
 directionalLight.shadow.camera.top = 8
 directionalLight.shadow.camera.right = 8
-directionalLight.shadow.camera.bottom = - 8
-directionalLight.shadow.camera.left = - 8
+directionalLight.shadow.camera.bottom = -8
+directionalLight.shadow.camera.left = -8
 directionalLight.shadow.camera.near = 1
 directionalLight.shadow.camera.far = 20
 
@@ -369,21 +367,125 @@ ghost3.shadow.camera.far = 10
 /**
  * Sky
  */
-const sky = new Sky()
-sky.scale.set(100, 100, 100)
-scene.add(sky)
+// const sky = new Sky()
+// sky.scale.set(100, 100, 100)
+// scene.add(sky)
+//
+// sky.material.uniforms['turbidity'].value = 20
+// sky.material.uniforms['rayleigh'].value = 0
+// sky.material.uniforms['mieCoefficient'].value = 0.1
+// sky.material.uniforms['mieDirectionalG'].value = 1
+// sky.material.uniforms['sunPosition'].value.set(23, -180, 0.1)
 
-sky.material.uniforms['turbidity'].value = 10
-sky.material.uniforms['rayleigh'].value = 3
-sky.material.uniforms['mieCoefficient'].value = 0.1
-sky.material.uniforms['mieDirectionalG'].value = 0.95
-sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+/**
+ * Procedural Night Sky with Stars
+ */
+
+// Create a starfield
+const starGeometry = new THREE.BufferGeometry();
+const starCount = 5000; // Number of stars
+const starPositions = new Float32Array(starCount * 3);
+
+for (let i = 0; i < starCount; i++) {
+    const x = (Math.random() - 0.5) * 400; // Spread over X-axis
+    const y = Math.random() * 150 + 10;   // Ensure stars are above floor (min 10, max 160)
+    const z = (Math.random() - 0.5) * 400; // Spread over Z-axis
+
+    starPositions[i * 3] = x;
+    starPositions[i * 3 + 1] = y;
+    starPositions[i * 3 + 2] = z;
+}
+
+starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+const starMaterial = new THREE.PointsMaterial({
+    color: 0xffffff, // White stars
+    size: 0.3,       // Star size
+    sizeAttenuation: true
+});
+
+const starField = new THREE.Points(starGeometry, starMaterial);
+scene.add(starField);
+
+
+/**
+ * Moon (Positioned at the Directional Light Source)
+ */
+const moonTexture = "./public/textures/moon/ldem_3_8bit.jpg";
+const moonDisplacementMapTexture = "./public/textures/moon/lroc_color_poles_1k.jpg";
+
+const moonColorTexture = textureLoader.load(moonTexture);
+const moonDisplacementMap = textureLoader.load(moonDisplacementMapTexture);
+
+// Create Moon Geometry
+const moonGeometry = new THREE.SphereGeometry(1, 30, 30);
+
+// Create Moon Material
+const moonMaterial = new THREE.MeshPhongMaterial({
+    color: 0xffffff,
+    map: moonColorTexture,
+    displacementMap: moonDisplacementMap,
+    displacementScale: 0.06,
+    bumpMap: moonDisplacementMap,
+    bumpScale: 0.04,
+    reflectivity: 0,
+    shininess: 0
+});
+
+// Create Moon Mesh
+const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+
+// Position Moon at the Directional Light Source
+moon.position.set(-1.5, 13, -15);
+scene.add(moon);
+
+/**
+ * Debug GUI for Moon
+ */
+const moonFolder = gui.addFolder('Moon');
+moonFolder.add(moon.position, 'x', -50, 50, 0.1).name('Position X');
+moonFolder.add(moon.position, 'y', -50, 50, 0.1).name('Position Y');
+moonFolder.add(moon.position, 'z', -50, 50, 0.1).name('Position Z');
+moonFolder.add(moon.scale, 'x', 0.5, 5, 0.1).name('Scale X');
+moonFolder.add(moon.scale, 'y', 0.5, 5, 0.1).name('Scale Y');
+moonFolder.add(moon.scale, 'z', 0.5, 5, 0.1).name('Scale Z');
+moonFolder.add(moonMaterial, 'displacementScale', 0, 0.2, 0.01).name('Displacement Scale');
+moonFolder.add(moonMaterial, 'bumpScale', 0, 0.2, 0.01).name('Bump Scale');
+moonFolder.add(moonMaterial, 'reflectivity', 0, 1, 0.01).name('Reflectivity');
+moonFolder.add(moonMaterial, 'shininess', 0, 10, 0.1).name('Shininess');
+moonFolder.close();
+
+
+/**
+ * Moon Light (Point Light instead of Directional Light)
+ */
+const moonLight = new THREE.PointLight(0xffffff, 3, 50); // Color, Intensity, Distance
+moonLight.position.set(-1.5, 13, -13); // Attach light to moon
+scene.add(moonLight);
+
+// Light Helper (Disabled by Default)
+const moonLightHelper = new THREE.PointLightHelper(moonLight, 2);
+moonLightHelper.visible = false; // Hide by default
+scene.add(moonLightHelper);
+
+/**
+ * Debug GUI for Moon Light
+ */
+const moonLightFolder = gui.addFolder('Moon Light');
+moonLightFolder.add(moonLight, 'intensity', 0, 2, 0.05).name('Intensity');
+moonLightFolder.add(moonLight, 'distance', 10, 100, 1).name('Distance');
+moonLightFolder.add(moonLight.position, 'x', -50, 50, 0.1).name('Pos X');
+moonLightFolder.add(moonLight.position, 'y', -50, 50, 0.1).name('Pos Y');
+moonLightFolder.add(moonLight.position, 'z', -50, 50, 0.1).name('Pos Z');
+moonLightFolder.add(moonLightHelper, 'visible').name('Show Helper'); // Toggle visibility
+moonLightFolder.close();
+
 
 /**
  * Fog
  */
-// scene.fog = new THREE.Fog('#04343f', 1, 13)
-scene.fog = new THREE.FogExp2('#04343f', 0.1)
+scene.fog = new THREE.Fog('#000000', 1, 13)
+scene.fog = new THREE.FogExp2('#2c2c2c', 0.01)
 
 /**
  * Animate
@@ -400,7 +502,7 @@ const tick = () => {
     ghost1.position.z = Math.sin(ghost1Angle) * 4
     ghost1.position.y = Math.sin(ghost1Angle) * Math.sin(ghost1Angle * 2.34) * Math.sin(ghost1Angle * 3.45)
 
-    const ghost2Angle = - elapsedTime * 0.38
+    const ghost2Angle = -elapsedTime * 0.38
     ghost2.position.x = Math.cos(ghost2Angle) * 5
     ghost2.position.z = Math.sin(ghost2Angle) * 5
     ghost2.position.y = Math.sin(ghost2Angle) * Math.sin(ghost2Angle * 2.34) * Math.sin(ghost2Angle * 3.45)
@@ -409,6 +511,12 @@ const tick = () => {
     ghost3.position.x = Math.cos(ghost3Angle) * 6
     ghost3.position.z = Math.sin(ghost3Angle) * 6
     ghost3.position.y = Math.sin(ghost3Angle) * Math.sin(ghost3Angle * 2.34) * Math.sin(ghost3Angle * 3.45)
+
+
+    //Moon
+    moon.rotation.y += 0.002;
+    moon.rotation.x += 0.0001;
+
 
     // Update controls
     controls.update()
@@ -520,7 +628,7 @@ ghost1Folder.add(ghost1, 'intensity', 0, 10, 0.1).name('Intensity');
 ghost1Folder.add(ghost1.position, 'x', -10, 10, 0.1).name('Pos X');
 ghost1Folder.add(ghost1.position, 'y', 0, 10, 0.1).name('Pos Y');
 ghost1Folder.add(ghost1.position, 'z', -10, 10, 0.1).name('Pos Z');
-ghost1Folder.addColor({ color: ghost1.color.getHex() }, 'color')
+ghost1Folder.addColor({color: ghost1.color.getHex()}, 'color')
     .onChange(value => ghost1.color.set(value))
     .name('Color');
 
@@ -529,7 +637,7 @@ ghost2Folder.add(ghost2, 'intensity', 0, 10, 0.1).name('Intensity');
 ghost2Folder.add(ghost2.position, 'x', -10, 10, 0.1).name('Pos X');
 ghost2Folder.add(ghost2.position, 'y', 0, 10, 0.1).name('Pos Y');
 ghost2Folder.add(ghost2.position, 'z', -10, 10, 0.1).name('Pos Z');
-ghost2Folder.addColor({ color: ghost2.color.getHex() }, 'color')
+ghost2Folder.addColor({color: ghost2.color.getHex()}, 'color')
     .onChange(value => ghost2.color.set(value))
     .name('Color');
 
@@ -538,7 +646,7 @@ ghost3Folder.add(ghost3, 'intensity', 0, 10, 0.1).name('Intensity');
 ghost3Folder.add(ghost3.position, 'x', -10, 10, 0.1).name('Pos X');
 ghost3Folder.add(ghost3.position, 'y', 0, 10, 0.1).name('Pos Y');
 ghost3Folder.add(ghost3.position, 'z', -10, 10, 0.1).name('Pos Z');
-ghost3Folder.addColor({ color: ghost3.color.getHex() }, 'color')
+ghost3Folder.addColor({color: ghost3.color.getHex()}, 'color')
     .onChange(value => ghost3.color.set(value))
     .name('Color');
 
@@ -589,63 +697,61 @@ for (const [index, grave] of graves.children.entries()) {
 /**
  * Debug GUI Setup for Sky
  */
-const skyFolder = gui.addFolder('Sky');
-skyFolder.close()
-
-// Debug Controls for Sky Properties
-skyFolder.add(sky.material.uniforms['turbidity'], 'value', 0, 20, 0.1).name('Turbidity');
-skyFolder.add(sky.material.uniforms['rayleigh'], 'value', 0, 10, 0.1).name('Rayleigh');
-skyFolder.add(sky.material.uniforms['mieCoefficient'], 'value', 0, 0.5, 0.01).name('Mie Coefficient');
-skyFolder.add(sky.material.uniforms['mieDirectionalG'], 'value', 0, 1, 0.01).name('Mie Directional G');
-
-// Debug Controls for Sun Position
-const sunFolder = skyFolder.addFolder('Sun Position');
-sunFolder.add(sky.material.uniforms['sunPosition'].value, 'x', -1, 1, 0.01).name('Pos X');
-sunFolder.add(sky.material.uniforms['sunPosition'].value, 'y', -1, 1, 0.01).name('Pos Y');
-sunFolder.add(sky.material.uniforms['sunPosition'].value, 'z', -1, 1, 0.01).name('Pos Z');
+// const skyFolder = gui.addFolder('Sky');
+// skyFolder.close()
+//
+// // Debug Controls for Sky Properties
+// skyFolder.add(sky.material.uniforms['turbidity'], 'value', -20, 20, 0.1).name('Turbidity');
+// skyFolder.add(sky.material.uniforms['rayleigh'], 'value', -20, 20, 0.1).name('Rayleigh');
+// skyFolder.add(sky.material.uniforms['mieCoefficient'], 'value', -20, 20, 0.01).name('Mie Coefficient');
+// skyFolder.add(sky.material.uniforms['mieDirectionalG'], 'value', -20, 20, 0.01).name('Mie Directional G');
+//
+// // Debug Controls for Sun Position
+// const sunFolder = skyFolder.addFolder('Sun Position');
+// sunFolder.add(sky.material.uniforms['sunPosition'].value, 'x', -20, 20, 0.01).name('Pos X');
+// sunFolder.add(sky.material.uniforms['sunPosition'].value, 'y', -20, 20, 0.01).name('Pos Y');
+// sunFolder.add(sky.material.uniforms['sunPosition'].value, 'z', -20, 20, 0.01).name('Pos Z');
 
 /**
  * Debug GUI Setup for Fog
  */
-const fogFolder = gui.addFolder('Fog');
-fogFolder.close()
-
-// Fog Type Toggle (Linear or Exponential)
-const fogSettings = {
-    type: 'Exponential', // Default to Exponential Fog
-    color: scene.fog.color.getHex(),
-    density: scene.fog.density, // For Exponential Fog
-    near: 1, // Placeholder for Linear Fog
-    far: 13 // Placeholder for Linear Fog
-};
-
-// Update Fog Type Dynamically
-fogFolder.add(fogSettings, 'type', ['Linear', 'Exponential']).name('Fog Type').onChange((value) => {
-    if (value === 'Linear') {
-        scene.fog = new THREE.Fog(fogSettings.color, fogSettings.near, fogSettings.far);
-        fogFolder.remove(fogDensityControl); // Remove density control
-        fogNearControl = fogFolder.add(scene.fog, 'near', 0, 20, 0.1).name('Near');
-        fogFarControl = fogFolder.add(scene.fog, 'far', 0, 50, 0.1).name('Far');
-    } else {
-        scene.fog = new THREE.FogExp2(fogSettings.color, fogSettings.density);
-        fogFolder.remove(fogNearControl); // Remove near/far controls
-        fogFolder.remove(fogFarControl);
-        fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
-    }
-});
+// const fogFolder = gui.addFolder('Fog');
+// fogFolder.close()
+//
+// // Fog Type Toggle (Linear or Exponential)
+// const fogSettings = {
+//     type: 'Exponential', // Default to Exponential Fog
+//     color: scene.fog.color.getHex(),
+//     density: scene.fog.density, // For Exponential Fog
+//     near: 1, // Placeholder for Linear Fog
+//     far: 13 // Placeholder for Linear Fog
+// };
+//
+// // Update Fog Type Dynamically
+// fogFolder.add(fogSettings, 'type', ['Linear', 'Exponential']).name('Fog Type').onChange((value) => {
+//     if (value === 'Linear') {
+//         scene.fog = new THREE.Fog(fogSettings.color, fogSettings.near, fogSettings.far);
+//         fogFolder.remove(fogDensityControl); // Remove density control
+//         fogNearControl = fogFolder.add(scene.fog, 'near', 0, 20, 0.1).name('Near');
+//         fogFarControl = fogFolder.add(scene.fog, 'far', 0, 50, 0.1).name('Far');
+//     } else {
+//         scene.fog = new THREE.FogExp2(fogSettings.color, fogSettings.density);
+//         fogFolder.remove(fogNearControl); // Remove near/far controls
+//         fogFolder.remove(fogFarControl);
+//         fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
+//     }
+// });
 
 // Fog Color Control
-fogFolder.addColor(fogSettings, 'color').name('Fog Color').onChange((value) => {
-    scene.fog.color.set(value);
-});
-
-// Default Control for Exponential Fog Density
-let fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
-
-// Placeholder Controls for Linear Fog (will be toggled dynamically)
-let fogNearControl, fogFarControl;
-
-gui.close(); // Closes GUI by default, can be opened manually
+// fogFolder.addColor(fogSettings, 'color').name('Fog Color').onChange((value) => {
+//     scene.fog.color.set(value);
+// });
+//
+// // Default Control for Exponential Fog Density
+// let fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
+//
+// // Placeholder Controls for Linear Fog (will be toggled dynamically)
+// let fogNearControl, fogFarControl;
 
 
 gui.close(); // Closes GUI by default, can be opened manually
