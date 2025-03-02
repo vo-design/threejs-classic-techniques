@@ -380,6 +380,12 @@ sky.material.uniforms['mieDirectionalG'].value = 0.95
 sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
 
 /**
+ * Fog
+ */
+// scene.fog = new THREE.Fog('#04343f', 1, 13)
+scene.fog = new THREE.FogExp2('#04343f', 0.1)
+
+/**
  * Animate
  */
 const timer = new Timer()
@@ -598,7 +604,48 @@ sunFolder.add(sky.material.uniforms['sunPosition'].value, 'x', -1, 1, 0.01).name
 sunFolder.add(sky.material.uniforms['sunPosition'].value, 'y', -1, 1, 0.01).name('Pos Y');
 sunFolder.add(sky.material.uniforms['sunPosition'].value, 'z', -1, 1, 0.01).name('Pos Z');
 
+/**
+ * Debug GUI Setup for Fog
+ */
+const fogFolder = gui.addFolder('Fog');
+fogFolder.close()
 
+// Fog Type Toggle (Linear or Exponential)
+const fogSettings = {
+    type: 'Exponential', // Default to Exponential Fog
+    color: scene.fog.color.getHex(),
+    density: scene.fog.density, // For Exponential Fog
+    near: 1, // Placeholder for Linear Fog
+    far: 13 // Placeholder for Linear Fog
+};
+
+// Update Fog Type Dynamically
+fogFolder.add(fogSettings, 'type', ['Linear', 'Exponential']).name('Fog Type').onChange((value) => {
+    if (value === 'Linear') {
+        scene.fog = new THREE.Fog(fogSettings.color, fogSettings.near, fogSettings.far);
+        fogFolder.remove(fogDensityControl); // Remove density control
+        fogNearControl = fogFolder.add(scene.fog, 'near', 0, 20, 0.1).name('Near');
+        fogFarControl = fogFolder.add(scene.fog, 'far', 0, 50, 0.1).name('Far');
+    } else {
+        scene.fog = new THREE.FogExp2(fogSettings.color, fogSettings.density);
+        fogFolder.remove(fogNearControl); // Remove near/far controls
+        fogFolder.remove(fogFarControl);
+        fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
+    }
+});
+
+// Fog Color Control
+fogFolder.addColor(fogSettings, 'color').name('Fog Color').onChange((value) => {
+    scene.fog.color.set(value);
+});
+
+// Default Control for Exponential Fog Density
+let fogDensityControl = fogFolder.add(scene.fog, 'density', 0, 0.5, 0.01).name('Density');
+
+// Placeholder Controls for Linear Fog (will be toggled dynamically)
+let fogNearControl, fogFarControl;
+
+gui.close(); // Closes GUI by default, can be opened manually
 
 
 gui.close(); // Closes GUI by default, can be opened manually
