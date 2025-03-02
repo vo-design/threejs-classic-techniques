@@ -23,11 +23,11 @@ const scene = new THREE.Scene()
 const textureLoader = new THREE.TextureLoader()
 
 // Floor
-const floorAlphaTexture = textureLoader.load('./public/textures/floor/alpha.webp')
-const floorColorTexture = textureLoader.load('./public/textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.webp')
-const floorARMTexture = textureLoader.load('./public/textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.webp')
-const floorNormalTexture = textureLoader.load('./public/textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.webp')
-const floorDisplacementTexture = textureLoader.load('./public/textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.webp')
+const floorAlphaTexture = textureLoader.load('./textures/floor/alpha.webp')
+const floorColorTexture = textureLoader.load('./textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.webp')
+const floorARMTexture = textureLoader.load('./textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.webp')
+const floorNormalTexture = textureLoader.load('./textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.webp')
+const floorDisplacementTexture = textureLoader.load('./textures/floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.webp')
 
 floorColorTexture.repeat.set(8, 8)
 floorARMTexture.repeat.set(8, 8)
@@ -48,16 +48,16 @@ floorDisplacementTexture.wrapT = THREE.RepeatWrapping
 floorColorTexture.colorSpace = THREE.SRGBColorSpace
 
 // Wall
-const wallColorTexture = textureLoader.load('./public/textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_diff_1k.webp')
-const wallARMTexture = textureLoader.load('./public/textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_arm_1k.webp')
-const wallNormalTexture = textureLoader.load('./public/textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_nor_gl_1k.webp')
+const wallColorTexture = textureLoader.load('./textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_diff_1k.webp')
+const wallARMTexture = textureLoader.load('./textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_arm_1k.webp')
+const wallNormalTexture = textureLoader.load('./textures/wall/castle_brick_broken_06_1k/castle_brick_broken_06_nor_gl_1k.webp')
 
 wallColorTexture.colorSpace = THREE.SRGBColorSpace
 
 // Roof
-const roofColorTexture = textureLoader.load('./public/textures/roof/roof_slates_02_1k/roof_slates_02_diff_1k.webp')
-const roofARMTexture = textureLoader.load('./public/textures/roof/roof_slates_02_1k/roof_slates_02_arm_1k.webp')
-const roofNormalTexture = textureLoader.load('./public/textures/roof/roof_slates_02_1k/roof_slates_02_nor_gl_1k.webp')
+const roofColorTexture = textureLoader.load('./textures/roof/roof_slates_02_1k/roof_slates_02_diff_1k.webp')
+const roofARMTexture = textureLoader.load('./textures/roof/roof_slates_02_1k/roof_slates_02_arm_1k.webp')
+const roofNormalTexture = textureLoader.load('./textures/roof/roof_slates_02_1k/roof_slates_02_nor_gl_1k.webp')
 
 roofColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -70,9 +70,9 @@ roofARMTexture.wrapS = THREE.RepeatWrapping
 roofNormalTexture.wrapS = THREE.RepeatWrapping
 
 // Bush
-const bushColorTexture = textureLoader.load('./public/textures/bush/leaves_forest_ground_1k/leaves_forest_ground_diff_1k.webp')
-const bushARMTexture = textureLoader.load('./public/textures/bush/leaves_forest_ground_1k/leaves_forest_ground_arm_1k.webp')
-const bushNormalTexture = textureLoader.load('./public/textures/bush/leaves_forest_ground_1k/leaves_forest_ground_nor_gl_1k.webp')
+const bushColorTexture = textureLoader.load('./textures/bush/leaves_forest_ground_1k/leaves_forest_ground_diff_1k.webp')
+const bushARMTexture = textureLoader.load('./textures/bush/leaves_forest_ground_1k/leaves_forest_ground_arm_1k.webp')
+const bushNormalTexture = textureLoader.load('./textures/bush/leaves_forest_ground_1k/leaves_forest_ground_nor_gl_1k.webp')
 
 bushColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -85,9 +85,9 @@ bushARMTexture.wrapS = THREE.RepeatWrapping
 bushNormalTexture.wrapS = THREE.RepeatWrapping
 
 // Grave
-const graveColorTexture = textureLoader.load('./public/textures/grave/plastered_stone_wall_1k/plastered_stone_wall_diff_1k.webp')
-const graveARMTexture = textureLoader.load('./public/textures/grave/plastered_stone_wall_1k/plastered_stone_wall_arm_1k.webp')
-const graveNormalTexture = textureLoader.load('./public/textures/grave/plastered_stone_wall_1k/plastered_stone_wall_nor_gl_1k.webp')
+const graveColorTexture = textureLoader.load('./textures/grave/plastered_stone_wall_1k/plastered_stone_wall_diff_1k.webp')
+const graveARMTexture = textureLoader.load('./textures/grave/plastered_stone_wall_1k/plastered_stone_wall_arm_1k.webp')
+const graveNormalTexture = textureLoader.load('./textures/grave/plastered_stone_wall_1k/plastered_stone_wall_nor_gl_1k.webp')
 
 graveColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -96,13 +96,13 @@ graveARMTexture.repeat.set(0.3, 0.4)
 graveNormalTexture.repeat.set(0.3, 0.4)
 
 // Door
-const doorColorTexture = textureLoader.load('./public/textures/door/color.webp')
-const doorAlphaTexture = textureLoader.load('./public/textures/door/alpha.webp')
-const doorAmbientOcclusionTexture = textureLoader.load('./public/textures/door/ambientOcclusion.webp')
-const doorHeightTexture = textureLoader.load('./public/textures/door/height.webp')
-const doorNormalTexture = textureLoader.load('./public/textures/door/normal.webp')
-const doorMetalnessTexture = textureLoader.load('./public/textures/door/metalness.webp')
-const doorRoughnessTexture = textureLoader.load('./public/textures/door/roughness.webp')
+const doorColorTexture = textureLoader.load('./textures/door/color.webp')
+const doorAlphaTexture = textureLoader.load('./textures/door/alpha.webp')
+const doorAmbientOcclusionTexture = textureLoader.load('./textures/door/ambientOcclusion.webp')
+const doorHeightTexture = textureLoader.load('./textures/door/height.webp')
+const doorNormalTexture = textureLoader.load('./textures/door/normal.webp')
+const doorMetalnessTexture = textureLoader.load('./textures/door/metalness.webp')
+const doorRoughnessTexture = textureLoader.load('./textures/door/roughness.webp')
 
 doorColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -411,8 +411,8 @@ scene.add(starField);
 /**
  * Moon (Positioned at the Directional Light Source)
  */
-const moonTexture = "./public/textures/moon/ldem_3_8bit.jpg";
-const moonDisplacementMapTexture = "./public/textures/moon/lroc_color_poles_1k.jpg";
+const moonTexture = "./textures/moon/ldem_3_8bit.jpg";
+const moonDisplacementMapTexture = "./textures/moon/lroc_color_poles_1k.jpg";
 
 const moonColorTexture = textureLoader.load(moonTexture);
 const moonDisplacementMap = textureLoader.load(moonDisplacementMapTexture);
