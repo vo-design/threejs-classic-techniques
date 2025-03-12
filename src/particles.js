@@ -18,7 +18,7 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
-const particleTexture = textureLoader.load('./textures/particles/11.png')
+const particleTexture = textureLoader.load('./textures/particles/4.png')
 
 /**
  * Particles
@@ -27,17 +27,19 @@ const particleTexture = textureLoader.load('./textures/particles/11.png')
 const particlesGeometry = new THREE.BufferGeometry()
 const count = 500
 
-const positions = new Float32Array(count * 3) // Multiply by 3 because each position is composed of 3 values (x, y, z)
+const positions = new Float32Array(count * 3)
+const colors = new Float32Array(count * 3)
 
-for (let i = 0; i < count * 3; i++) // Multiply by 3 for same reason
+for(let i = 0; i < count * 3; i++)
 {
-    positions[i] = (Math.random() - 0.5) * 10 // Math.random() - 0.5 to have a random value between -0.5 and +0.5
+    positions[i] = (Math.random() - 0.5) * 10
+    colors[i] = Math.random()
 }
 
-particlesGeometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(positions, 3)
-) // Create the Three.js BufferAttribute and specify that each information is composed of 3 values
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+// Create the Three.js BufferAttribute and specify that each information is composed of 3 values
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
     size: 0.2,
@@ -48,6 +50,7 @@ particlesMaterial.transparent = true
 particlesMaterial.alphaMap = particleTexture
 particlesMaterial.depthWrite = false
 particlesMaterial.blending = THREE.AdditiveBlending
+particlesMaterial.vertexColors = true
 
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
