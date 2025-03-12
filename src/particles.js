@@ -18,6 +18,7 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const particleTexture = textureLoader.load('./textures/particles/11.png')
 
 /**
  * Particles
@@ -39,11 +40,19 @@ particlesGeometry.setAttribute(
 ) // Create the Three.js BufferAttribute and specify that each information is composed of 3 values
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    sizeAttenuation: true
+    size: 0.2,
+    sizeAttenuation: true,
+    color: 'white'
 })
+particlesMaterial.transparent = true
+particlesMaterial.alphaMap = particleTexture
+particlesMaterial.depthWrite = false
+particlesMaterial.blending = THREE.AdditiveBlending
+
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+
+
 scene.add(particles)
 /**
  * Sizes
