@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 
 /**
@@ -15,13 +15,47 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 /**
- * Test cube
+ * Galaxy
  */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
-)
-scene.add(cube)
+const parameters = {}
+parameters.count = 1000
+parameters.size = 0.02
+
+const generateGalaxy = () => {
+    /**
+     * Geometry
+     */
+    const geometry = new THREE.BufferGeometry()
+
+    const positions = new Float32Array(parameters.count * 3)
+
+    for (let i = 0; i < parameters.count; i++) {
+        const i3 = i * 3
+
+        positions[i3] = (Math.random() - 0.5) * 3
+        positions[i3 + 1] = (Math.random() - 0.5) * 3
+        positions[i3 + 2] = (Math.random() - 0.5) * 3
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+    /**
+     * Material
+     */
+    const material = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    })
+
+    /**
+     * Points
+     */
+    const points = new THREE.Points(geometry, material)
+    scene.add(points)
+}
+generateGalaxy()
 
 /**
  * Sizes
@@ -31,8 +65,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -74,8 +107,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update controls
