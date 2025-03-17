@@ -8,7 +8,7 @@ import gsap from 'gsap'
 const gui = new GUI()
 
 const parameters = {
-    materialColor: '#ffeded'
+    materialColor: '#ffd500'
 }
 
 gui
@@ -39,7 +39,8 @@ gradientTexture.magFilter = THREE.NearestFilter
 // Material
 const material = new THREE.MeshToonMaterial({
     color: parameters.materialColor,
-    gradientMap: gradientTexture
+    // gradientMap: gradientTexture,
+    wireframe: true
 })
 
 // Objects
@@ -49,11 +50,11 @@ const mesh1 = new THREE.Mesh(
     material
 )
 const mesh2 = new THREE.Mesh(
-    new THREE.ConeGeometry(1, 2, 32),
+    new THREE.SphereGeometry(1, 32, 32),
     material
 )
 const mesh3 = new THREE.Mesh(
-    new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16),
+    new THREE.BoxGeometry(1.6, 1.6, 1.6, 6, 6, 6),
     material
 )
 
@@ -72,9 +73,14 @@ const sectionMeshes = [ mesh1, mesh2, mesh3 ]
 /**
  * Lights
  */
-const directionalLight = new THREE.DirectionalLight('#ffffff', 3)
-directionalLight.position.set(1, 1, 0)
-scene.add(directionalLight)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 300);
+pointLight.position.x = 2;
+pointLight.position.y = 3;
+pointLight.position.z = 4;
+scene.add(pointLight);
 
 /**
  * Particles
