@@ -17,6 +17,8 @@ gui.addColor(parameters, 'materialColor').onChange(() => {
     particlesMaterial.color.set(parameters.materialColor)
 })
 
+gui.close()
+
 /**
  * Base
  */
@@ -62,7 +64,7 @@ scene.add(pointLight)
 /**
  * Particles
  */
-const particlesCount = 2000
+const particlesCount = 200
 const positions = new Float32Array(particlesCount * 3)
 
 for (let i = 0; i < particlesCount; i++) {
@@ -136,15 +138,6 @@ window.addEventListener('scroll', () => {
             ease: 'power4.out',
             z: '+=1.5'
         })
-
-        // Camera shake effect
-        gsap.to(cameraGroup.position, {
-            x: (Math.random() - 0.5) * 0.2,
-            y: (Math.random() - 0.5) * 0.2,
-            z: (Math.random() - 0.5) * 0.2,
-            duration: 0.5,
-            ease: 'power3.out'
-        })
     }
 })
 
@@ -195,9 +188,6 @@ const tick = () => {
         positions[i * 3 + 1] += Math.sin(elapsedTime + i) * 0.002
     }
     particles.geometry.attributes.position.needsUpdate = true
-
-    // Color Shift Effect
-    // particlesMaterial.color.setHSL(Math.sin(elapsedTime * 0.2), 1, 0.5)
 
     // Render
     renderer.render(scene, camera)
