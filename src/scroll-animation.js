@@ -8,9 +8,19 @@ import gsap from 'gsap'
 const gui = new GUI()
 
 const parameters = {
-    materialColor: '#ffd500',
+    materialColor: '#ffffff',
     pointColor: '#ffffff',
 }
+
+const debugObject = {
+    displacementScale: 0.3,
+    displacementBias: -0.2,
+    wireframe: false,
+    showGrid: false,
+    positionX: 2,
+    positionY: 2,
+    positionZ: 1
+};
 
 gui.addColor(parameters, 'materialColor').onChange(() => {
     material.color.set(parameters.materialColor)
@@ -32,15 +42,24 @@ const textureLoader = new THREE.TextureLoader()
 const gradientTexture = textureLoader.load('textures/gradients/3.jpg')
 gradientTexture.magFilter = THREE.NearestFilter
 
+// Floor
+const floorAlphaTexture = textureLoader.load('./textures/floor/alpha.webp')
+
+
+
+
+
+
+
 // Material
 const material = new THREE.MeshToonMaterial({
     color: parameters.materialColor,
-    wireframe: true
+    wireframe: false
 })
 
 // Objects
 const objectsDistance = 4
-const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4, 16, 60), material)
+const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.25, 16, 60), material)
 const mesh2 = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material)
 const mesh3 = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 1.6, 6, 6, 6), material)
 
@@ -50,6 +69,35 @@ mesh3.position.set(2, -objectsDistance * 2, 0)
 
 scene.add(mesh1, mesh2, mesh3)
 const sectionMeshes = [mesh1, mesh2, mesh3]
+
+
+// Floor
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2, 100, 100),
+    new THREE.MeshStandardMaterial({
+        alphaMap: floorAlphaTexture,
+        transparent: true,
+        color: '#ffffff',
+    })
+)
+floor.rotation.x = -Math.PI * 0.5
+
+floor.position.set(1.6, -1.1, 1.3)
+
+scene.add(floor)
+
+// Position Debug Controls
+gui.add(debugObject, 'positionX', -5, 5, 0.1).onChange((value) => {
+    floor.position.x = value;
+});
+gui.add(debugObject, 'positionY', -5, 5, 0.1).onChange((value) => {
+    floor.position.y = value;
+});
+gui.add(debugObject, 'positionZ', -5, 5, 0.1).onChange((value) => {
+    floor.position.z = value;
+});
+
+
 
 /**
  * Lights
