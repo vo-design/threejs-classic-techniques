@@ -20,6 +20,12 @@ html {
     outline: none;
 }
 
+.slider {
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+}
+
 
 .section {
     display: flex;
@@ -32,6 +38,7 @@ html {
     font-size: 7vmin;
     padding-left: 10%;
     padding-right: 10%;
+    scroll-snap-align: start;
 }
 
 section:nth-child(odd) {
