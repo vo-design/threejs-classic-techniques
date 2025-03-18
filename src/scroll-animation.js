@@ -138,6 +138,19 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
+ * Function to animate floating motion
+ */
+const floatAnimation = (object) => {
+    gsap.to(object.position, {
+        duration: 2,
+        y: object.position.y + 0.2, // Move slightly up
+        ease: "power1.inOut",
+        yoyo: true,
+        repeat: -1 // Loop animation infinitely
+    });
+};
+
+/**
  * Scroll Effects
  */
 let scrollY = window.scrollY
@@ -154,7 +167,7 @@ const animateSection = (sectionIndex) => {
         { z: -5 },
         {
             duration: 1.5,
-            delay: 0.5,
+            delay: 1,
             z: objects[sectionIndex].position[2],
             ease: 'power2.out',
         }
@@ -165,6 +178,7 @@ const animateSection = (sectionIndex) => {
         { angle: 0 },
         {
             duration: 1,
+            delay: 0.5,
             angle: 0.35,
             ease: 'power2.out'
         }
@@ -173,8 +187,11 @@ const animateSection = (sectionIndex) => {
     gsap.to(sectionMeshes[sectionIndex].rotation, {
         duration: 4.5,
         ease: 'power4.out',
-        z: '+=1.5',
+        z: '+=5.5',
     });
+
+    // Start floating animation for current object
+    floatAnimation(sectionMeshes[sectionIndex]);
 };
 
 // **Run animation on page load for the first visible section**
@@ -193,12 +210,8 @@ window.addEventListener('scroll', () => {
 /**
  * Animate
  */
-const clock = new THREE.Clock()
-let previousTime = 0
 
 const tick = () => {
-    const elapsedTime = clock.getElapsedTime()
-    previousTime = elapsedTime
 
     // Animate camera
     camera.position.y = -scrollY / sizes.height * objectsDistance
