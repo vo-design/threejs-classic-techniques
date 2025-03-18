@@ -8,26 +8,8 @@ import gsap from 'gsap'
 const gui = new GUI()
 
 const parameters = {
-    materialColor: '#ffffff',
-    pointColor: '#ffffff',
+    materialColor: '#ffffff'
 }
-
-const debugObject = {
-    displacementScale: 0.3,
-    displacementBias: -0.2,
-    wireframe: false,
-    showGrid: false,
-    positionX: 2,
-    positionY: 2,
-    positionZ: 1
-};
-
-gui.addColor(parameters, 'materialColor').onChange(() => {
-    material.color.set(parameters.materialColor)
-    particlesMaterial.color.set(parameters.materialColor)
-})
-
-gui.close()
 
 /**
  * Base
@@ -38,107 +20,92 @@ const scene = new THREE.Scene()
 /**
  * Objects
  */
-const textureLoader = new THREE.TextureLoader()
-const gradientTexture = textureLoader.load('textures/gradients/3.jpg')
-gradientTexture.magFilter = THREE.NearestFilter
-
-// Floor
-const floorAlphaTexture = textureLoader.load('./textures/floor/alpha.webp')
-
-
-
-
-
-
 
 // Material
 const material = new THREE.MeshToonMaterial({
     color: parameters.materialColor,
-    wireframe: false
+    wireframe: true
 })
 
 // Objects
-const objectsDistance = 4
-const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.25, 16, 60), material)
-const mesh2 = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material)
-const mesh3 = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 1.6, 6, 6, 6), material)
+const objectsDistance = 6;
+const sectionMeshes = [];
 
-mesh1.position.set(2, -objectsDistance * 0, 0)
-mesh2.position.set(-2, -objectsDistance * 1, 0)
-mesh3.position.set(2, -objectsDistance * 2, 0)
+// Create an array of object properties for easier debugging
+const objects = [
+    {
+        name: "Torus",
+        mesh: new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.25, 16, 60), material),
+        position: [2, 0, -1]
+    },
+    {
+        name: "Sphere",
+        mesh: new THREE.Mesh(new THREE.SphereGeometry(0.65, 32, 32), material),
+        position: [-2, -objectsDistance, -1]
+    },
+    {
+        name: "Box",
+        mesh: new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9, 6, 6, 6), material),
+        position: [2, -objectsDistance * 2, -1]
+    }
+];
 
-scene.add(mesh1, mesh2, mesh3)
-const sectionMeshes = [mesh1, mesh2, mesh3]
-
-
-// Floor
-const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2, 100, 100),
-    new THREE.MeshStandardMaterial({
-        alphaMap: floorAlphaTexture,
-        transparent: true,
-        color: '#ffffff',
-    })
-)
-floor.rotation.x = -Math.PI * 0.5
-
-floor.position.set(1.6, -1.1, 1.3)
-
-scene.add(floor)
-
-// Position Debug Controls
-gui.add(debugObject, 'positionX', -5, 5, 0.1).onChange((value) => {
-    floor.position.x = value;
-});
-gui.add(debugObject, 'positionY', -5, 5, 0.1).onChange((value) => {
-    floor.position.y = value;
-});
-gui.add(debugObject, 'positionZ', -5, 5, 0.1).onChange((value) => {
-    floor.position.z = value;
+// Loop through each object and set up properties
+objects.forEach((obj, index) => {
+    obj.mesh.position.set(obj.position[0], obj.position[1], -5); // Start from z = -5
+    obj.mesh.castShadow = true; // Enable shadow casting
+    scene.add(obj.mesh);
+    sectionMeshes.push(obj.mesh);
 });
 
+// Add a plane for each figure
+const planeSize = 4;
+const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize);
+const planeMaterial = new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    transparent: true,
+    opacity: 0.7,
+    side: THREE.DoubleSide,
+});
 
+objects.forEach((obj) => {
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = -Math.PI * 0.5;
+    plane.position.set(obj.position[0], obj.position[1] - 1, obj.position[2]);
+    plane.receiveShadow = true;
+    scene.add(plane);
+});
 
 /**
  * Lights
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-scene.add(ambientLight)
+const spotlights = objects.map((obj, index) => {
+    const spotLight = new THREE.SpotLight("#ffffff", 10, 5.1, 0, 0.78, 1); // Start with angle = 0
+    spotLight.position.set(obj.position[0], obj.position[1] + 3, obj.position[2]);
+    spotLight.visible = true;
+    spotLight.castShadow = true;
 
-const pointLight = new THREE.PointLight(0xffffff, 300)
-pointLight.position.set(2, 3, 4)
-scene.add(pointLight)
+    // Configure shadow properties
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+    spotLight.shadow.camera.near = 0.5;
+    spotLight.shadow.camera.far = 10;
+    spotLight.shadow.camera.fov = 30;
+    spotLight.shadow.bias = -0.001;
 
-/**
- * Particles
- */
-const particlesCount = 200
-const positions = new Float32Array(particlesCount * 3)
+    scene.add(spotLight);
 
-for (let i = 0; i < particlesCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 10
-    positions[i * 3 + 1] = objectsDistance * 0.5 - Math.random() * objectsDistance * sectionMeshes.length
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 10
-}
+    // Spotlight Target
+    spotLight.target.position.set(obj.position[0], obj.position[1], obj.position[2]);
+    scene.add(spotLight.target);
 
-const particlesGeometry = new THREE.BufferGeometry()
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-
-const particlesMaterial = new THREE.PointsMaterial({
-    color: parameters.pointColor,
-    sizeAttenuation: true,
-    size: 0.03,
-    transparent: true,
-    opacity: 0.8
-})
-
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
-scene.add(particles)
+    return spotLight;
+});
 
 /**
  * Sizes
  */
-const sizes = { width: window.innerWidth, height: window.innerHeight }
+const sizes = { width: window.innerWidth, height: window.innerHeight };
 
 window.addEventListener('resize', () => {
     sizes.width = window.innerWidth
@@ -167,37 +134,61 @@ cameraGroup.add(camera)
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
  * Scroll Effects
  */
 let scrollY = window.scrollY
-let currentSection = 0
-
-window.addEventListener('scroll', () => {
-    scrollY = window.scrollY
-    const newSection = Math.round(scrollY / sizes.height)
-
-    if (newSection !== currentSection) {
-        currentSection = newSection
-
-        gsap.to(sectionMeshes[currentSection].rotation, {
-            duration: 1.5,
-            ease: 'power4.out',
-            z: '+=1.5'
-        })
-    }
-})
+let currentSection = Math.round(scrollY / sizes.height);
 
 /**
- * Cursor Effect
+ * Function to animate the current section on scroll or load
  */
-const cursor = { x: 0, y: 0 }
+const animateSection = (sectionIndex) => {
+    if (sectionIndex < 0 || sectionIndex >= sectionMeshes.length) return;
 
-window.addEventListener('mousemove', (event) => {
-    cursor.x = event.clientX / sizes.width - 0.5
-    cursor.y = event.clientY / sizes.height - 0.5
-})
+    gsap.fromTo(
+        sectionMeshes[sectionIndex].position,
+        { z: -5 },
+        {
+            duration: 1.5,
+            delay: 0.5,
+            z: objects[sectionIndex].position[2],
+            ease: 'power2.out',
+        }
+    );
+
+    gsap.fromTo(
+        spotlights[sectionIndex],
+        { angle: 0 },
+        {
+            duration: 1,
+            angle: 0.35,
+            ease: 'power2.out'
+        }
+    );
+
+    gsap.to(sectionMeshes[sectionIndex].rotation, {
+        duration: 4.5,
+        ease: 'power4.out',
+        z: '+=1.5',
+    });
+};
+
+// **Run animation on page load for the first visible section**
+animateSection(currentSection);
+
+window.addEventListener('scroll', () => {
+    scrollY = window.scrollY;
+    const newSection = Math.round(scrollY / sizes.height);
+
+    if (newSection !== currentSection) {
+        currentSection = newSection;
+        animateSection(currentSection);
+    }
+});
 
 /**
  * Animate
@@ -207,35 +198,10 @@ let previousTime = 0
 
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
 
     // Animate camera
     camera.position.y = -scrollY / sizes.height * objectsDistance
-
-    const parallaxX = cursor.x * 0.5
-    const parallaxY = -cursor.y * 0.5
-    cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 5 * deltaTime
-    cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 5 * deltaTime
-
-    // Floating & Pulsating Objects
-    for (const mesh of sectionMeshes) {
-        mesh.rotation.x += deltaTime * 0.1
-        mesh.rotation.y += deltaTime * 0.12
-        mesh.position.y += Math.sin(elapsedTime + mesh.position.x) * 0.005
-        mesh.scale.set(
-            1 + Math.sin(elapsedTime + mesh.position.x) * 0.05,
-            1 + Math.sin(elapsedTime + mesh.position.x) * 0.05,
-            1 + Math.sin(elapsedTime + mesh.position.x) * 0.05
-        )
-    }
-
-    // Animate Particles
-    const positions = particles.geometry.attributes.position.array
-    for (let i = 0; i < particlesCount; i++) {
-        positions[i * 3 + 1] += Math.sin(elapsedTime + i) * 0.002
-    }
-    particles.geometry.attributes.position.needsUpdate = true
 
     // Render
     renderer.render(scene, camera)
