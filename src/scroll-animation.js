@@ -50,12 +50,21 @@ const objects = [
     }
 ];
 
+const objectFolder = gui.addFolder('Figures');
+objectFolder.close();
+
 // Loop through each object and set up properties
 objects.forEach((obj, index) => {
     obj.mesh.position.set(obj.position[0], obj.position[1], -5); // Start from z = -5
     obj.mesh.castShadow = true; // Enable shadow casting
     scene.add(obj.mesh);
     sectionMeshes.push(obj.mesh);
+
+    const folder = objectFolder.addFolder(obj.name);
+    folder.close();
+    folder.add(obj.mesh.position, 'x', -5, 5, 0.1).name('Position X');
+    folder.add(obj.mesh.position, 'y', -10, 5, 0.1).name('Position Y');
+    folder.add(obj.mesh.position, 'z', -10, 5, 0.1).name('Position Z');
 });
 
 // Add a plane for each figure
@@ -79,6 +88,9 @@ objects.forEach((obj) => {
 /**
  * Lights
  */
+const lightFolder = gui.addFolder('Lights');
+lightFolder.close();
+
 const spotlights = objects.map((obj, index) => {
     const spotLight = new THREE.SpotLight("#ffffff", 10, 5.1, 0, 0.78, 1); // Start with angle = 0
     spotLight.position.set(obj.position[0], obj.position[1] + 3, obj.position[2]);
@@ -99,8 +111,19 @@ const spotlights = objects.map((obj, index) => {
     spotLight.target.position.set(obj.position[0], obj.position[1], obj.position[2]);
     scene.add(spotLight.target);
 
+    const folder = lightFolder.addFolder(obj.name);
+    folder.close();
+    folder.add(spotLight, 'intensity', 0, 20, 0.1).name('Intensity');
+    folder.add(spotLight, 'angle', 0, Math.PI / 2, 0.01).name('Angle');
+    folder.add(spotLight.position, 'x', -10, 10, 0.1).name('Position X');
+    folder.add(spotLight.position, 'y', -10, 10, 0.1).name('Position Y');
+    folder.add(spotLight.position, 'z', -10, 10, 0.1).name('Position Z');
+    folder.add(spotLight, 'visible').name('Visible');
+
     return spotLight;
 });
+
+
 
 /**
  * Sizes
@@ -153,8 +176,29 @@ const floatAnimation = (object) => {
 /**
  * Scroll Effects
  */
-let scrollY = window.scrollY
+let scrollY = window.scrollY;
 let currentSection = Math.round(scrollY / sizes.height);
+const sections = document.querySelectorAll(".section");
+
+/**
+ * Function to update active section
+ */
+const updateActiveSection = () => {
+    let scrollY = window.scrollY;
+    let newSectionIndex = Math.round(scrollY / sizes.height);
+
+    if (newSectionIndex !== currentSection) {
+        sections.forEach((section, index) => {
+            if (index === newSectionIndex) {
+                section.classList.add("active");
+                animateSection(index);
+            } else {
+                section.classList.remove("active");
+            }
+        });
+        currentSection = newSectionIndex;
+    }
+};
 
 /**
  * Function to animate the current section on scroll or load
@@ -196,6 +240,10 @@ const animateSection = (sectionIndex) => {
 
 // **Run animation on page load for the first visible section**
 animateSection(currentSection);
+sections[currentSection]?.classList.add("active");
+
+// **Add event listener for scroll updates**
+window.addEventListener("scroll", updateActiveSection);
 
 window.addEventListener('scroll', () => {
     scrollY = window.scrollY;
