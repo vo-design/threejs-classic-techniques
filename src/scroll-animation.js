@@ -256,6 +256,8 @@ window.addEventListener('scroll', () => {
     }
 });
 
+
+
 /**
  * Animate
  */
