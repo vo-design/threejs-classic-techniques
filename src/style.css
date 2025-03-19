@@ -44,7 +44,7 @@ html {
 .section h2 {
     opacity: 0;
     transform: translateX(150px);
-    transition: all 5s ease;
+    transition: all 2s ease;
 }
 
 .section.active h2 {

@@ -6,6 +6,7 @@ import gsap from 'gsap'
  * Debug
  */
 const gui = new GUI()
+gui.close()
 
 const parameters = {
     materialColor: '#ffffff'
